@@ -40,8 +40,10 @@ describe('getConfig', () => {
       dev: true,
       filter: 'syncpack',
       indent: '  ',
+      overrides: true,
       peer: true,
       prod: true,
+      resolutions: true,
       semverRange: '~',
       sortAz: ['overridden'],
       sortFirst: ['name', 'description', 'version', 'author'],
@@ -64,12 +66,14 @@ describe('getConfig', () => {
   });
 
   it('overrides all dependency types when any CLI option is used', () => {
-    setConfigFileTo({ dev: true, peer: true, prod: true });
+    setConfigFileTo({ dev: true, overrides: true, peer: true, prod: true, resolutions: true });
     expect(getConfig({ prod: true })).toEqual(
       expect.objectContaining({
         dev: false,
+        overrides: false,
         peer: false,
         prod: true,
+        resolutions: false,
       }),
     );
   });

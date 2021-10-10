@@ -1,4 +1,4 @@
-import { DependencyType, SyncpackConfig } from '../../../constants';
+import { DependencyOption, DependencyType, SyncpackConfig } from '../../../constants';
 import { getDependencyTypes } from '../get-dependency-types';
 import { SourceWrapper } from '../get-wrappers';
 import { getInstallationsOf } from './get-installations-of';
@@ -21,10 +21,7 @@ export interface InstalledPackage {
   installations: Installation[];
 }
 
-export function* getDependencies(
-  wrappers: SourceWrapper[],
-  options: Pick<SyncpackConfig, 'dev' | 'peer' | 'prod'>,
-): Generator<InstalledPackage> {
+export function* getDependencies(wrappers: SourceWrapper[], options: DependencyOption): Generator<InstalledPackage> {
   const types = getDependencyTypes(options);
   const visited: { [name: string]: boolean } = {};
   for (const type of types) {

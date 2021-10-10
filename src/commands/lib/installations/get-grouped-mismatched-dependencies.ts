@@ -1,4 +1,4 @@
-import { SyncpackConfig, VersionGroup } from '../../../constants';
+import { DependencyOption, SyncpackConfig, VersionGroup } from '../../../constants';
 import { SourceWrapper } from '../get-wrappers';
 import { getDependencies, Installation, InstalledPackage } from './get-dependencies';
 
@@ -13,7 +13,7 @@ const hasDifferentVersionToPreviousSibling = (installation: Installation, i: num
 
 export function* getGroupedMismatchedDependencies(
   wrappers: SourceWrapper[],
-  options: Pick<SyncpackConfig, 'dev' | 'peer' | 'prod' | 'versionGroups'>,
+  options: DependencyOption & Pick<SyncpackConfig, 'versionGroups'>,
 ): Generator<InstalledPackage> {
   const iterator = getDependencies(wrappers, options);
   const installedPackages = Array.from(iterator);

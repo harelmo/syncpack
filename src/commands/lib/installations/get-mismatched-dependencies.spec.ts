@@ -4,108 +4,63 @@ import { DEFAULT_CONFIG } from '../../../constants';
 import { SourceWrapper } from '../get-wrappers';
 import { getMismatchedDependencies } from './get-mismatched-dependencies';
 
-const types = permutations([
-  'dependencies',
-  'devDependencies',
-  'peerDependencies',
-  'dependencies',
-  'devDependencies',
-  'peerDependencies',
-]);
+const types: Array<[string, string]> = [
+  ['dependencies', 'prod'],
+  ['devDependencies', 'dev'],
+  ['overrides', 'overrides'],
+  ['peerDependencies', 'peer'],
+  ['resolutions', 'resolutions'],
+];
 
 describe('getMismatchedDependencies', () => {
-  describe('when 2 versions of the same dependency in 2 packages match', () => {
-    const versionA = '1.0.0';
-    const versionB = '1.0.0';
-    types.forEach(([typeA, typeB]) => {
-      [true, false].forEach((dev) => {
-        describe(`when dev ${dev}`, () => {
-          [true, false].forEach((peer) => {
-            describe(`when peer ${peer}`, () => {
-              [true, false].forEach((prod) => {
-                describe(`when prod ${prod}`, () => {
-                  it('should find no mismatches', () => {
-                    expect(
-                      Array.from(
-                        getMismatchedDependencies(
-                          [{ [typeA]: { chalk: versionA } }, { [typeB]: { chalk: versionB } }].map(
-                            (contents): SourceWrapper => withJson({ filePath: '', contents }),
-                          ),
-                          { ...DEFAULT_CONFIG, dev, peer, prod },
-                        ),
-                      ),
-                    ).toBeEmptyArray();
-                  });
-                });
-              });
-            });
-          });
-        });
+  types.forEach(([propA, optionA]) => {
+    types.forEach(([propB, optionB]) => {
+      it(`finds mismatches between ${propA} and ${propB}`, () => {
+        const versionA = '1.0.0';
+        const versionB = '2.0.0';
+        const wrappers = [{ [propA]: { chalk: versionA } }, { [propB]: { chalk: versionB } }].map(
+          (contents): SourceWrapper => withJson({ filePath: '', contents }),
+        );
+        const result = Array.from(
+          getMismatchedDependencies(wrappers, {
+            ...DEFAULT_CONFIG,
+            dev: false,
+            overrides: false,
+            peer: false,
+            prod: false,
+            resolutions: false,
+            [optionA]: true,
+            [optionB]: true,
+          }),
+        );
+        expect(result[0].installations).toBeArrayOfObjects();
+        expect(result[0].installations).toBeArrayOfSize(2);
       });
     });
   });
 
-  describe('when 2 versions of the same dependency in 2 packages differ', () => {
-    const versionA = '1.0.0';
-    const versionB = '2.0.0';
-    types.forEach(([typeA, typeB]) => {
-      describe(`between ${typeA} and ${typeB}`, () => {
-        [true, false].forEach((dev) => {
-          describe(`when dev ${dev}`, () => {
-            [true, false].forEach((peer) => {
-              describe(`when peer ${peer}`, () => {
-                [true, false].forEach((prod) => {
-                  describe(`when prod ${prod}`, () => {
-                    it('should find mismatches if present', () => {
-                      const result = Array.from(
-                        getMismatchedDependencies(
-                          [{ [typeA]: { chalk: versionA } }, { [typeB]: { chalk: versionB } }].map(
-                            (contents): SourceWrapper => withJson({ filePath: '', contents }),
-                          ),
-                          { ...DEFAULT_CONFIG, dev, peer, prod },
-                        ),
-                      );
-                      expect(result).toMatchSnapshot();
-                    });
-                  });
-                });
-              });
-            });
-          });
-        });
+  types.forEach(([propA, optionA]) => {
+    types.forEach(([propB, optionB]) => {
+      it(`ignores matches between ${propA} and ${propB}`, () => {
+        const versionA = '1.0.0';
+        const versionB = '1.0.0';
+        const wrappers = [{ [propA]: { chalk: versionA } }, { [propB]: { chalk: versionB } }].map(
+          (contents): SourceWrapper => withJson({ filePath: '', contents }),
+        );
+        const result = Array.from(
+          getMismatchedDependencies(wrappers, {
+            ...DEFAULT_CONFIG,
+            dev: false,
+            overrides: false,
+            peer: false,
+            prod: false,
+            resolutions: false,
+            [optionA]: true,
+            [optionB]: true,
+          }),
+        );
+        expect(result).toBeEmptyArray();
       });
     });
   });
 });
-
-function permutations(array: string[]) {
-  const result: string[][] = [];
-  const len = array.length;
-  const tmp: number[] = [];
-  function nodup() {
-    const got: { [key: string]: boolean } = {};
-    for (let l = 0; l < tmp.length; l++) {
-      if (got[tmp[l]]) return false;
-      got[tmp[l]] = true;
-    }
-    return true;
-  }
-  function iter(index: number) {
-    let l: number;
-    let rr: string[] = [];
-    if (index === len) {
-      if (nodup()) {
-        rr = [];
-        for (l = 0; l < tmp.length; l++) rr.push(array[tmp[l]]);
-        result.push(rr);
-      }
-    } else {
-      for (l = 0; l < len; l++) {
-        tmp[index] = l;
-        iter(index + 1);
-      }
-    }
-  }
-  iter(0);
-  return result;
-}

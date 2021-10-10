@@ -1,8 +1,5 @@
 import { collect } from './lib/collect';
 
-export type DependencyType = 'dependencies' | 'devDependencies' | 'peerDependencies';
-export const DEPENDENCY_TYPES: DependencyType[] = ['dependencies', 'devDependencies', 'peerDependencies'];
-
 export const CWD = process.cwd();
 
 export const GREATER = 1;
@@ -59,6 +56,10 @@ export type SyncpackConfig = Readonly<{
    */
   indent: string;
   /**
+   * whether to search within overrides (npm)
+   */
+  overrides: boolean;
+  /**
    * whether to search within peerDependencies
    */
   peer: boolean;
@@ -66,6 +67,10 @@ export type SyncpackConfig = Readonly<{
    * whether to search within dependencies
    */
   prod: boolean;
+  /**
+   * whether to search within resolutions (yarn)
+   */
+  resolutions: boolean;
   /**
    * defaults to `""` to ensure that exact dependency versions are used instead
    * of loose ranges
@@ -90,12 +95,25 @@ export type SyncpackConfig = Readonly<{
   versionGroups: VersionGroup[];
 }>;
 
+export type DependencyType = 'dependencies' | 'devDependencies' | 'peerDependencies' | 'resolutions' | 'overrides';
+export type DependencyOption = Pick<SyncpackConfig, 'dev' | 'peer' | 'prod' | 'resolutions' | 'overrides'>;
+
+export const DEPENDENCY_TYPES: DependencyType[] = [
+  'dependencies',
+  'devDependencies',
+  'overrides',
+  'peerDependencies',
+  'resolutions',
+];
+
 export const DEFAULT_CONFIG: SyncpackConfig = {
   dev: true,
   filter: '.',
   indent: '  ',
   peer: true,
   prod: true,
+  resolutions: true,
+  overrides: true,
   semverRange: '',
   sortAz: ['contributors', 'dependencies', 'devDependencies', 'keywords', 'peerDependencies', 'resolutions', 'scripts'],
   sortFirst: ['name', 'description', 'version', 'author'],
@@ -114,6 +132,8 @@ interface OptionsByName {
   indent: [string, string];
   peer: [string, string];
   prod: [string, string];
+  resolutions: [string, string];
+  overrides: [string, string];
   semverRange: [string, string];
   source: [string, string, typeof collect, string[]];
 }
@@ -124,6 +144,8 @@ export const option: OptionsByName = {
   indent: ['-i, --indent [value]', `override indentation. defaults to "${DEFAULT_CONFIG.indent}"`],
   peer: ['-P, --peer', 'include peerDependencies'],
   prod: ['-p, --prod', 'include dependencies'],
+  resolutions: ['-rs, --resolutions', 'include resolutions'],
+  overrides: ['-ov, --overrides', 'include overrides'],
   semverRange: [
     '-r, --semver-range <range>',
     `see supported ranges below. defaults to "${DEFAULT_CONFIG.semverRange}"`,

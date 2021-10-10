@@ -29,14 +29,16 @@ export const getConfig = (program: Partial<SyncpackConfig>): SyncpackConfig => {
   const isArrayOfVersionGroups = (value: unknown): value is VersionGroup[] =>
     isArray(value) && value.every(isVersionGroup);
 
-  const hasTypeOverride = program.prod || program.dev || program.peer;
+  const hasTypeOverride = program.dev || program.overrides || program.peer || program.prod || program.resolutions;
 
   return {
     dev: hasTypeOverride ? Boolean(program.dev) : getOption<boolean>('dev', isBoolean),
     filter: getOption<string>('filter', (value: unknown): value is string => isNonEmptyString(value)),
     indent: getOption<string>('indent', (value: unknown): value is string => isNonEmptyString(value)),
+    overrides: hasTypeOverride ? Boolean(program.overrides) : getOption<boolean>('overrides', isBoolean),
     peer: hasTypeOverride ? Boolean(program.peer) : getOption<boolean>('peer', isBoolean),
     prod: hasTypeOverride ? Boolean(program.prod) : getOption<boolean>('prod', isBoolean),
+    resolutions: hasTypeOverride ? Boolean(program.resolutions) : getOption<boolean>('resolutions', isBoolean),
     semverRange: getOption<ValidRange>('semverRange', isValidSemverRange),
     sortAz: getOption<string[]>('sortAz', isArrayOfStrings),
     sortFirst: getOption<string[]>('sortFirst', isArrayOfStrings),

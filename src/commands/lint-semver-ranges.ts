@@ -1,12 +1,12 @@
 import chalk from 'chalk';
-import { SyncpackConfig } from '../constants';
+import { DependencyOption, SyncpackConfig } from '../constants';
 import { getWrappers, SourceWrapper } from './lib/get-wrappers';
 import { Installation } from './lib/installations/get-dependencies';
 import { getInstallations } from './lib/installations/get-installations';
 import { log } from './lib/log';
 import { setSemverRange as createSetSemverRange } from './lib/set-semver-range';
 
-type Options = Pick<SyncpackConfig, 'dev' | 'filter' | 'peer' | 'prod' | 'semverRange' | 'source'>;
+type Options = DependencyOption & Pick<SyncpackConfig, 'filter' | 'semverRange' | 'source'>;
 
 export const lintSemverRanges = (
   wrappers: SourceWrapper[],

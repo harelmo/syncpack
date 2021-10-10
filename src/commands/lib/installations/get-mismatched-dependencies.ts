@@ -1,12 +1,11 @@
-import { SyncpackConfig } from '../../../constants';
+import { DependencyOption, SyncpackConfig } from '../../../constants';
 import { SourceWrapper } from '../get-wrappers';
 import { getDependencies, InstalledPackage } from './get-dependencies';
 import { getGroupedMismatchedDependencies } from './get-grouped-mismatched-dependencies';
 
-function* getUngroupedMismatchedDependencies(
-  wrappers: SourceWrapper[],
-  options: Pick<SyncpackConfig, 'dev' | 'peer' | 'prod' | 'versionGroups'>,
-): Generator<InstalledPackage> {
+type Options = DependencyOption & Pick<SyncpackConfig, 'versionGroups'>;
+
+function* getUngroupedMismatchedDependencies(wrappers: SourceWrapper[], options: Options): Generator<InstalledPackage> {
   const iterator = getDependencies(wrappers, options);
   for (const installedPackage of iterator) {
     const { installations } = installedPackage;
@@ -22,10 +21,7 @@ function* getUngroupedMismatchedDependencies(
   }
 }
 
-export function* getMismatchedDependencies(
-  wrappers: SourceWrapper[],
-  options: Pick<SyncpackConfig, 'dev' | 'peer' | 'prod' | 'versionGroups'>,
-): Generator<InstalledPackage> {
+export function* getMismatchedDependencies(wrappers: SourceWrapper[], options: Options): Generator<InstalledPackage> {
   const iterator = options.versionGroups.length
     ? getGroupedMismatchedDependencies(wrappers, options)
     : getUngroupedMismatchedDependencies(wrappers, options);

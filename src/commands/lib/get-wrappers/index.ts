@@ -13,6 +13,7 @@ export interface Source {
   devDependencies?: { [key: string]: string };
   keywords?: string[];
   name?: string;
+  overrides?: { [key: string]: string };
   peerDependencies?: { [key: string]: string };
   repository?: { type: string; url: string } | string;
   resolutions?: { [key: string]: string };

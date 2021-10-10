@@ -2,14 +2,14 @@ import chalk from 'chalk';
 import { writeFileSync } from 'fs-extra';
 import { EOL } from 'os';
 import { relative } from 'path';
-import { CWD, SyncpackConfig } from '../constants';
+import { CWD, DependencyOption, SyncpackConfig } from '../constants';
 import { getHighestVersion } from './lib/get-highest-version';
 import { getWrappers, SourceWrapper } from './lib/get-wrappers';
 import { getMismatchedDependencies } from './lib/installations/get-mismatched-dependencies';
 import { log } from './lib/log';
 import { matchesFilter } from './lib/matches-filter';
 
-type Options = Pick<SyncpackConfig, 'dev' | 'filter' | 'indent' | 'peer' | 'prod' | 'source' | 'versionGroups'>;
+type Options = DependencyOption & Pick<SyncpackConfig, 'filter' | 'indent' | 'source' | 'versionGroups'>;
 
 const getWorkspaceVersion = (name: string, wrappers: SourceWrapper[]): string | null => {
   const local = wrappers.find((wrapper) => wrapper.contents.name === name);
