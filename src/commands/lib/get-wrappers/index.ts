@@ -8,18 +8,18 @@ import { removeReadonlyType } from './readonly';
 
 export interface Source {
   bugs?: { url: string } | string;
-  dependencies?: { [key: string]: string };
+  dependencies?: Record<string, string>;
   description?: string;
-  devDependencies?: { [key: string]: string };
+  devDependencies?: Record<string, string>;
   keywords?: string[];
   name?: string;
-  peerDependencies?: { [key: string]: string };
+  peerDependencies?: Record<string, string>;
   repository?: { type: string; url: string } | string;
-  resolutions?: { [key: string]: string };
-  scripts?: { [key: string]: string };
+  resolutions?: Record<string, string>;
+  scripts?: Record<string, string>;
   version?: string;
-  workspaces?: string[] | { [key: string]: string[] };
-  [otherProps: string]: string | string[] | { [key: string]: string | string[] } | undefined;
+  workspaces?: Record<string, string[]> | string[];
+  [otherProps: string]: Record<string, string | string[]> | string | string[] | undefined;
 }
 
 export interface SourceWrapper {

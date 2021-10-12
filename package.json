@@ -30,6 +30,7 @@
     "fp-ts": "2.11.4",
     "fs-extra": "10.0.0",
     "glob": "7.2.0",
+    "minimatch": "3.0.4",
     "read-yaml-file": "2.1.0",
     "semver": "7.3.5"
   },
